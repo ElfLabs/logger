@@ -33,36 +33,40 @@ func (log *wrapLogger) Check(lvl zapcore.Level, msg string) *zapcore.CheckedEntr
 	return ((*zap.Logger)(log)).Check(lvl, msg)
 }
 
+func (log *wrapLogger) logger() *zap.Logger {
+	return ((*zap.Logger)(log)).WithOptions(zap.AddCallerSkip(1))
+}
+
 func (log *wrapLogger) Log(lvl zapcore.Level, msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).Log(lvl, msg, fields...)
+	log.logger().Log(lvl, msg, fields...)
 }
 
 func (log *wrapLogger) Debug(msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).Debug(msg, fields...)
+	log.logger().Debug(msg, fields...)
 }
 
 func (log *wrapLogger) Info(msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).Info(msg, fields...)
+	log.logger().Info(msg, fields...)
 }
 
 func (log *wrapLogger) Warn(msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).Warn(msg, fields...)
+	log.logger().Warn(msg, fields...)
 }
 
 func (log *wrapLogger) Error(msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).Error(msg, fields...)
+	log.logger().Error(msg, fields...)
 }
 
 func (log *wrapLogger) DPanic(msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).DPanic(msg, fields...)
+	log.logger().DPanic(msg, fields...)
 }
 
 func (log *wrapLogger) Panic(msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).Panic(msg, fields...)
+	log.logger().Panic(msg, fields...)
 }
 
 func (log *wrapLogger) Fatal(msg string, fields ...zap.Field) {
-	((*zap.Logger)(log)).Fatal(msg, fields...)
+	log.logger().Fatal(msg, fields...)
 }
 
 func (log *wrapLogger) Sync() error {
