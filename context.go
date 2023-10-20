@@ -4,12 +4,14 @@ import (
 	"context"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type (
 	loggerCtx    struct{}
 	fieldCtx     struct{}
 	fieldFuncCtx struct{}
+	levelCtx     struct{}
 )
 
 type (
@@ -69,6 +71,18 @@ func FieldFuncFromContext(ctx context.Context) []FieldFunc {
 	fs, _ := ctx.Value(fieldFuncCtx{}).([]FieldFunc)
 	if len(fs) != 0 {
 		return fs
+	}
+	return nil
+}
+
+func WithLevel(ctx context.Context, level zapcore.LevelEnabler) context.Context {
+	return context.WithValue(ctx, levelCtx{}, level)
+}
+
+func LevelFromContext(ctx context.Context) zapcore.LevelEnabler {
+	level, ok := ctx.Value(levelCtx{}).(zapcore.LevelEnabler)
+	if ok {
+		return level
 	}
 	return nil
 }

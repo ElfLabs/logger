@@ -78,11 +78,20 @@ func (log *wrapLogger) Core() zapcore.Core {
 }
 
 func (log *wrapLogger) WithContext(ctx context.Context) Logger {
+	level := LevelFromContext(ctx)
 	fields := FieldsFromContext(ctx)
-	if len(fields) == 0 {
+	switch {
+	case level == nil && len(fields) == 0:
+		return log
+	case level != nil && len(fields) == 0:
+		return New(((*zap.Logger)(log)).WithOptions(zap.IncreaseLevel(level)))
+	case level == nil && len(fields) != 0:
+		return New(((*zap.Logger)(log)).With(fields...))
+	case level != nil && len(fields) != 0:
+		return New(((*zap.Logger)(log)).WithOptions(zap.IncreaseLevel(level), zap.Fields(fields...)))
+	default:
 		return log
 	}
-	return New(((*zap.Logger)(log)).With(fields...))
 }
 
 func (log *wrapLogger) OnError(err error, fields ...zap.Field) IZapLog {
