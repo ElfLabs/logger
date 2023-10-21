@@ -15,6 +15,10 @@ func NewNamedLogger(name string) Logger {
 	return New(Named(name))
 }
 
+func NamedLoggerFromContext(ctx context.Context, name string) Logger {
+	return New(FromContext(ctx).Named(name))
+}
+
 func NewNamedSugarLogger(name string) *zap.SugaredLogger {
 	return NewNamedLogger(name).Sugar()
 }
