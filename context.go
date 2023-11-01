@@ -20,7 +20,7 @@ type (
 
 func NewContext(ctx context.Context, logger Logger) context.Context {
 	if logger == nil {
-		logger = L()
+		logger = L().WithContext(ctx)
 	}
 	return context.WithValue(ctx, loggerCtx{}, logger)
 }
@@ -28,7 +28,7 @@ func NewContext(ctx context.Context, logger Logger) context.Context {
 func FromContext(ctx context.Context) Logger {
 	logger, _ := ctx.Value(loggerCtx{}).(Logger)
 	if logger == nil {
-		logger = L()
+		logger = L().WithContext(ctx)
 	}
 	return logger.WithContext(ctx)
 }
