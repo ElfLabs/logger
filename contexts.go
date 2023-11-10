@@ -20,15 +20,15 @@ type (
 
 func NewContext(ctx context.Context, logger Logger) context.Context {
 	if logger == nil {
-		logger = L().WithContext(ctx)
+		logger = L()
 	}
-	return context.WithValue(ctx, loggerCtx{}, logger)
+	return context.WithValue(ctx, loggerCtx{}, logger.WithContext(ctx))
 }
 
 func FromContext(ctx context.Context) Logger {
 	logger, _ := ctx.Value(loggerCtx{}).(Logger)
 	if logger == nil {
-		logger = L().WithContext(ctx)
+		logger = L()
 	}
 	return logger.WithContext(ctx)
 }
@@ -42,6 +42,10 @@ func NewFieldContext(ctx context.Context, fields ...zap.Field) context.Context {
 		return context.WithValue(ctx, fieldCtx{}, fields)
 	}
 	return context.WithValue(ctx, fieldCtx{}, append(exists, fields...))
+}
+
+func WithField(ctx context.Context, fields ...zap.Field) context.Context {
+	return NewFieldContext(ctx, fields...)
 }
 
 func FieldsFromContext(ctx context.Context) []zap.Field {
@@ -75,14 +79,14 @@ func FieldFuncFromContext(ctx context.Context) []FieldFunc {
 	return nil
 }
 
-func WithLevel(ctx context.Context, level zapcore.LevelEnabler) context.Context {
+func WithLevel(ctx context.Context, level zapcore.Level) context.Context {
 	return context.WithValue(ctx, levelCtx{}, level)
 }
 
-func LevelFromContext(ctx context.Context) zapcore.LevelEnabler {
-	level, ok := ctx.Value(levelCtx{}).(zapcore.LevelEnabler)
+func LevelFromContext(ctx context.Context) zapcore.Level {
+	level, ok := ctx.Value(levelCtx{}).(zapcore.Level)
 	if ok {
 		return level
 	}
-	return nil
+	return zapcore.InvalidLevel
 }

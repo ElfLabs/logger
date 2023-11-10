@@ -44,6 +44,13 @@ var (
 	_globalS  = _globalL.Sugar()
 )
 
+const (
+	ConsoleLogEncoding = "console"
+	JSONLogEncoding    = "json"
+)
+
+var LogEncoding string = os.Getenv("LOG_ENCODING")
+
 // L returns the global Logger, which can be reconfigured with ReplaceGlobals.
 // It's safe for concurrent use.
 func L() Logger {
@@ -63,7 +70,7 @@ func S() *zap.SugaredLogger {
 }
 
 func WrapToGlobal(logger *zap.Logger) Logger {
-	l := (*wrapLogger)(logger)
+	l := New(logger)
 	ReplaceGlobals(l)
 	return l
 }
